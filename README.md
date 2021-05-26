@@ -1,1 +1,1 @@
-# goit-js-hw-13-image-finder-parsel
+# goit-js-hw-13-image-finder-parcel
