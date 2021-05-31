@@ -1,25 +1,60 @@
 import './sass/main.scss';
 import '../node_modules/material-design-icons';
 import _debounce from '../node_modules/lodash.debounce';
-import API from './js/apiService';
-import galleryTmp from './templates/galleryTmp.hbs';
-import imgCardTmp from './templates/imgCardTmp.hbs';
+import ApiService from './js/apiService';
+import galleryItemTmp from './templates/galleryItemTmp.hbs';
+import * as basicLightbox from 'basiclightbox';
 
 const refs = {
-    searchForm: document.getElementById('#search-form'),
-    gallerySection: document.querySelector('.gallery-section'),
+    // searchForm: document.querySelector('.search-form'),
+    inputEl: document.querySelector('.search-form-input'),
+    gallery: document.querySelector('.gallery'),
     loadMoreBtn: document.querySelector('.load-more-btn'),
-}
-refs.searchForm.addEventListener('input', _debounce((e) => {
-    const seachQuery = e.currentTarget.elements.query.value;
-    console.log('seachQuery :>> ', seachQuery);
-    API.fetchImgs(seachQuery).then(renderGallery).catch(onFetchError)
-}, 500));
-    
-function renderGallery(data) {
-    console.log('data :>> ', data);
-    const markup = imgCardTmp(data);
-    
+};
+const apiService = new ApiService();
+console.log('apiService :>> ', apiService);
+
+refs.inputEl.addEventListener('input', _debounce(onSearch, 1000));
+refs.loadMoreBtn.addEventListener('click', onLoadMore, scroll);
+refs.gallery.addEventListener('click', onGalleryImgClick);
+
+function onSearch(e) {
+    clearGallery();
+    apiService.query = e.target.value;
+    if (apiService.query && apiService.query !== '') {
+        apiService.resetPage();
+        apiService.fetchImgs().then(appendHitsMarckup);
+        refs.loadMoreBtn.classList.remove('is-hidden');
+    }
+    // if (apiService.query === '') {'
+    //     return alert('Bad Search Query');
+    // }     
 }
 
-function onFetchError(){}
+function onLoadMore() {
+    apiService.fetchImgs().then(appendHitsMarckup);
+}
+
+function appendHitsMarckup(hits) {
+    refs.gallery.insertAdjacentHTML('beforeend',galleryItemTmp(hits))
+}
+
+function clearGallery() {
+    refs.gallery.innerHTML = '';
+    refs.loadMoreBtn.classList.add('is-hidden');
+}
+
+// function scroll(){
+//  window.scrollIntoView({
+//   behavior: 'smooth',
+//   block: 'end',
+// });
+// }
+
+function onGalleryImgClick(e) {
+    if (e.target.nodeName === 'IMG') {
+        console.log('e.target :>> ', e.target);
+        const instance = basicLightbox.create(`<img src=${e.target.getAtribute('data-source')}>`)
+        instance.show()
+    }
+}
