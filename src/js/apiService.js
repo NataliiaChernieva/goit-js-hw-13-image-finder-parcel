@@ -8,7 +8,7 @@ export default class ApiService {
     }
 
     fetchImgs() {
-        console.log('this :>> ', this);
+        //console.log('this :>> ', this);
         const url = `${BASE_URL}?image_type=photo&orientation=horizontal&q=${this.seachQuery}&page=${this.page}&per_page=12&key=${API_KEY}`;
             return fetch(url).then(response => {
             console.log('response :>> ', response);
@@ -19,7 +19,7 @@ export default class ApiService {
                 return response.json();
             }
         }).then(data => {
-            console.log('data :>> ', data);
+            //console.log('data :>> ', data);
             this.incrementPage();
             return data.hits;
         })

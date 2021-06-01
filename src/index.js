@@ -33,8 +33,8 @@ function onSearch(e) {
 }
 
 function onLoadMore() {
-    apiService.fetchImgs().then(appendHitsMarckup);
-    scroll();
+    apiService.fetchImgs().then(appendHitsMarckup).then(scroll);
+    //scroll();
 }
 
 function appendHitsMarckup(hits) {
@@ -47,10 +47,16 @@ function clearGallery() {
 }
 
 function scroll(){
-    refs.loadMoreBtn.scrollIntoView({
+    // refs.loadMoreBtn.scrollIntoView({
+    //     behavior: 'smooth',
+    //     block: 'end',
+    // })
+    const totalScrollHeight = refs.gallery.clientHeight + 80;
+    console.log('totalScrollHeight :>> ', totalScrollHeight);
+    window.scrollTo({
+        top: totalScrollHeight,
         behavior: 'smooth',
-        block: 'end',
-    })
+    });
 }
 
 function onGalleryImgClick(e) {
