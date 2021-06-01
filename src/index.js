@@ -3,7 +3,8 @@ import '../node_modules/material-design-icons';
 import _debounce from '../node_modules/lodash.debounce';
 import ApiService from './js/apiService';
 import galleryItemTmp from './templates/galleryItemTmp.hbs';
-import * as basicLightbox from 'basiclightbox';
+import * as basicLightbox from '../node_modules/basiclightbox';
+import '../node_modules/basiclightbox/dist/basicLightbox.min.css'
 
 const refs = {
     // searchForm: document.querySelector('.search-form'),
@@ -15,7 +16,7 @@ const apiService = new ApiService();
 console.log('apiService :>> ', apiService);
 
 refs.inputEl.addEventListener('input', _debounce(onSearch, 1000));
-refs.loadMoreBtn.addEventListener('click', onLoadMore, scroll);
+refs.loadMoreBtn.addEventListener('click', onLoadMore);
 refs.gallery.addEventListener('click', onGalleryImgClick);
 
 function onSearch(e) {
@@ -33,6 +34,7 @@ function onSearch(e) {
 
 function onLoadMore() {
     apiService.fetchImgs().then(appendHitsMarckup);
+    scroll();
 }
 
 function appendHitsMarckup(hits) {
@@ -44,17 +46,17 @@ function clearGallery() {
     refs.loadMoreBtn.classList.add('is-hidden');
 }
 
-// function scroll(){
-//  window.scrollIntoView({
-//   behavior: 'smooth',
-//   block: 'end',
-// });
-// }
+function scroll(){
+    refs.loadMoreBtn.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+    })
+}
 
 function onGalleryImgClick(e) {
     if (e.target.nodeName === 'IMG') {
         console.log('e.target :>> ', e.target);
-        const instance = basicLightbox.create(`<img src=${e.target.getAtribute('data-source')}>`)
+        const instance = basicLightbox.create(`<img src=${e.target.dataset.source}>`);
         instance.show()
     }
 }
