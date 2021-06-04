@@ -7,7 +7,7 @@ import * as basicLightbox from '../node_modules/basiclightbox';
 import '../node_modules/basiclightbox/dist/basicLightbox.min.css'
 
 const refs = {
-    // searchForm: document.querySelector('.search-form'),
+    searchForm: document.querySelector('.search-form'),
     inputEl: document.querySelector('.search-form-input'),
     gallery: document.querySelector('.gallery'),
     loadMoreBtn: document.querySelector('.load-more-btn'),
@@ -15,21 +15,24 @@ const refs = {
 const apiService = new ApiService();
 console.log('apiService :>> ', apiService);
 
-refs.inputEl.addEventListener('input', _debounce(onSearch, 1000));
+refs.searchForm.addEventListener('submit', onSearch);
+// refs.inputEl.addEventListener('input', _debounce(onSearch, 1000));
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 refs.gallery.addEventListener('click', onGalleryImgClick);
 
 function onSearch(e) {
+    e.preventDefault();
     clearGallery();
-    apiService.query = e.target.value;
+    apiService.query = e.target.elements.query.value;
+    console.log('apiService.query :>> ', apiService.query);
     if (apiService.query && apiService.query !== '') {
         apiService.resetPage();
         apiService.fetchImgs().then(appendHitsMarckup);
         refs.loadMoreBtn.classList.remove('is-hidden');
     }
-    // if (apiService.query === '') {'
-    //     return alert('Bad Search Query');
-    // }     
+    if (apiService.query === '') {
+        return alert('Bad Search Query');
+    }
 }
 
 function onLoadMore() {
@@ -47,10 +50,6 @@ function clearGallery() {
 }
 
 function scroll(){
-    // refs.loadMoreBtn.scrollIntoView({
-    //     behavior: 'smooth',
-    //     block: 'end',
-    // })
     const totalScrollHeight = refs.gallery.clientHeight + 80;
     console.log('totalScrollHeight :>> ', totalScrollHeight);
     window.scrollTo({
